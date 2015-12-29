@@ -77,16 +77,16 @@ public class MultiplexerTimeServer implements Runnable {
 			if (key.isAcceptable()) {
 				// Accept the new connection
 				ServerSocketChannel ssc = (ServerSocketChannel) key.channel();
-				SocketChannel sc = ssc.accept();
-				sc.configureBlocking(false);
+				SocketChannel channel = ssc.accept();
+				channel.configureBlocking(false);
 				// add the new connection to the selector
-				sc.register(selector, SelectionKey.OP_READ);
+				channel.register(selector, SelectionKey.OP_READ);
 			}
 			if (key.isReadable()) {
 				// read data
-				SocketChannel sc = (SocketChannel) key.channel();
+				SocketChannel channel = (SocketChannel) key.channel();
 				ByteBuffer readBuffer = ByteBuffer.allocate(1024);
-				int readBytes = sc.read(readBuffer);
+				int readBytes = channel.read(readBuffer);
 				if (readBytes > 0) {
 					readBuffer.flip();
 					byte[] bytes = new byte[readBuffer.remaining()];
@@ -95,10 +95,10 @@ public class MultiplexerTimeServer implements Runnable {
 					System.out.println("The time server recieve order :" + body);
 					String currentTime = "QUERY TIME ORDER".equalsIgnoreCase(body)
 							? new java.util.Date(System.currentTimeMillis()).toString() : "BAD ORDER";
-					doWrite(sc, currentTime);
+					doWrite(channel, currentTime);
 				} else if (readBytes < 0) {
 					key.cancel();
-					sc.close();
+					channel.close();
 				} else {
 					;
 				}
