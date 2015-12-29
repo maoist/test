@@ -40,6 +40,7 @@ public class MultiplexerTimeServer implements Runnable {
 	public void run() {
 		while (!stop) {
 			try {
+				//这块代码有问题跑步起来
 				selector.select(1000);
 				Set<SelectionKey> selectKeys = selector.selectedKeys();
 				Iterator<SelectionKey> it = selectKeys.iterator();
@@ -61,14 +62,13 @@ public class MultiplexerTimeServer implements Runnable {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			if(selector != null){
-				try {
-					selector.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+		}
+		if(selector != null){
+			try {
+				selector.close();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-
 		}
 	}
 
